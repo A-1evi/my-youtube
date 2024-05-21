@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import VideoCard from "./VideoCard";
 import { YOUTUBE_MOST_POPULAR_API } from "../utils/constants";
 import { Link } from "react-router-dom";
@@ -8,12 +8,13 @@ const VideoContainer = () => {
   useEffect(() => {
     fetchVideo();
   }, []);
-  const fetchVideo = async () => {
+  const fetchVideo = useCallback(async () => {
     const data = await fetch(YOUTUBE_MOST_POPULAR_API);
     const json = await data.json();
    
     setVideos(json.items);
-  };
+    console.log("rendering...")
+  },[]);
 
   return (
     <div className="flex flex-wrap justify-evenly ">

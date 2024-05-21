@@ -1,38 +1,28 @@
+// src/components/Head.js
+
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSidebar } from "../utils/configSlice";
-import {
-  HAMBURGER_URL,
-  YOUTUBE_ICON_URL,
-  YOUTUBE_SEARCH_SUGGESTION_API,
-} from "../utils/constants";
-import { addSuggestedVideo, cacheResults } from "../utils/searchSlice";
+import { addSuggestedKeyword, cacheResults } from "../utils/searchSlice";
+import { useNavigate } from "react-router-dom";
+import { HAMBURGER_URL, YOUTUBE_ICON_URL } from "../utils/constants";
 
 const Head = () => {
   const [searchInput, setSearchInput] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [searchSuggestion, setSearchSuggestion] = useState("");
   const [showSuggestion, setShowSuggestion] = useState(false);
-  const searchCache = useSelector((store) => store.search);
+  const searchCache = useSelector((store) => store.search.cache);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleHamburgerMenu = () => {
     dispatch(toggleSidebar());
   };
 
-  const getSuggestedVideo = async () => {
-    const data = await fetch(YOUTUBE_SEARCH_SUGGESTION_API + searchSuggestion);
-    if (!data.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const json = await data.json();
-
-    dispatch(addSuggestedVideo(json.items));
-  
+  const handleOnClick = (suggestion) => {
+    dispatch(addSuggestedKeyword(suggestion));
+    setShowSuggestion(false);
+    navigate("/search");
   };
-
-  useEffect(() => {
-    getSuggestedVideo();
-  }, []);
 
   const getSearchSuggestion = async () => {
     try {
@@ -56,16 +46,15 @@ const Head = () => {
       );
     }
   };
+
   useEffect(() => {
-    // Debounce the API call
     const timer = setTimeout(() => {
-      if (searchCache[searchInput]) {
+      if (searchCache && searchCache[searchInput]) {
         setSuggestions(searchCache[searchInput]);
       } else {
         getSearchSuggestion();
       }
     }, 200);
-    // Cleanup the timeout on component unmount or searchInput change
     return () => {
       clearTimeout(timer);
     };
@@ -99,9 +88,7 @@ const Head = () => {
               setSearchInput(e.target.value);
             }}
             onFocus={() => setShowSuggestion(true)}
-            // Added a small delay to the onBlur event to ensure the click event on the suggestion is registered before the suggestions are hidden.
-            // This delay is implemented using setTimeout.
-            onBlur={() => setTimeout(() => setShowSuggestion(false), 100)}
+            onBlur={() => setTimeout(() => setShowSuggestion(false), 300)}
           ></input>
           <button className="bg-gray-200 px-5 py-3 mr-2 border border-gray-200 rounded-r-full">
             <i className="fa-solid fa-magnifying-glass"></i>
@@ -111,15 +98,13 @@ const Head = () => {
           <div className="absolute bg-white w-[34%] p-3 mx-2 text-lg shadow-lg z-50">
             <ul>
               {suggestions.map((suggestion) => (
-                <a href="/search" key={suggestion}>
-                  <li
-                    onClick={() => setSearchSuggestion(suggestion)}
-                    className="py-2 m-1 font-bold hover:bg-gray-200"
-                  >
-                    <i className="fa-solid fa-magnifying-glass"></i>{" "}
-                    {suggestion}
-                  </li>
-                </a>
+                <li
+                  key={suggestion}
+                  onClick={() => handleOnClick(suggestion)}
+                  className="py-2 m-1 font-bold hover:bg-gray-200"
+                >
+                  <i className="fa-solid fa-magnifying-glass"></i> {suggestion}
+                </li>
               ))}
             </ul>
           </div>

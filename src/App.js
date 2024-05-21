@@ -1,45 +1,46 @@
 import React from "react";
+import { Provider } from "react-redux";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import store from "./utils/store";
 import Head from "./components/Head";
 import Body from "./components/Body";
-import { Provider } from "react-redux";
-import store from "./utils/store";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import MainContainer from "./components/MainContainer";
 import WatchPage from "./components/WatchPage";
-import SearchedVideos from "./components/SearchedVideos";
+
+import SuggestedVideosList from "./components/SuggestedVideosList";
 
 const appRouter = createBrowserRouter([
   {
     path: "/",
-    element:<Body/>,
-    children:[
+    element: (
+      <>
+        <Head></Head>
+        <Body></Body>
+      </>
+    ),
+    children: [
       {
         path: "/",
-        element: <MainContainer/>
+        element: <MainContainer />,
       },
       {
         path: "/watch",
-        element: <WatchPage/>
+        element: <WatchPage />,
       },
       {
         path: "/search",
-        element: <SearchedVideos/>,
-
-      }
-    ]
-  }
-])
-
+        element: <SuggestedVideosList />,
+      },
+    ],
+  },
+]);
 
 const App = () => {
-
-
   return (
     <Provider store={store}>
-      <div>
-        <Head />
-        <RouterProvider router={appRouter}/>
-      </div>
+      <RouterProvider router={appRouter}>
+        <Head></Head>
+      </RouterProvider>
     </Provider>
   );
 };

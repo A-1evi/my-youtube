@@ -4,6 +4,7 @@ const searchSlice = createSlice({
   name: "search",
   initialState: {
     suggestedVideos: null,
+    keyword: null,
    
   },
   reducers: {
@@ -15,12 +16,16 @@ const searchSlice = createSlice({
     },
     addSuggestedVideo:(state, action) =>{
       state.suggestedVideos =action.payload;
+    },
+    addSuggestedKeyword:(state,action) =>{
+      state.keyword = action.payload
     }
+
     
    
   },
 });
 
-export const { cacheResults ,addSuggestedVideo } = searchSlice.actions;
+export const { cacheResults ,addSuggestedVideo ,addSuggestedKeyword } = searchSlice.actions;
 
 export default searchSlice.reducer;
