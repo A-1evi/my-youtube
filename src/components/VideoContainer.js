@@ -11,18 +11,18 @@ const VideoContainer = () => {
   const fetchVideo = useCallback(async () => {
     const data = await fetch(YOUTUBE_MOST_POPULAR_API);
     const json = await data.json();
-   
+
     setVideos(json.items);
-    console.log("rendering...")
-  },[]);
+  }, []);
 
   return (
     <div className="flex flex-wrap justify-evenly ">
-      { videos && videos.map((video) => (
-        <Link key={video.id} to={"/watch?v=" + video.id}>
-          <VideoCard info={video} />
-        </Link>
-      ))}
+      {videos &&
+        videos.map((video) => (
+          <Link key={video.id} to={"/watch?v=" + video.id}>
+            <VideoCard info={video} />
+          </Link>
+        ))}
     </div>
   );
 };
